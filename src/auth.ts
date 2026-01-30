@@ -10,6 +10,8 @@ if(!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET){
 
 export const {handlers:{GET,POST},auth,signIn,signOut}=NextAuth({
     adapter:PrismaAdapter(prisma),
+    // Support both Auth.js v5 and legacy env names
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
     providers:[
         GitHubProvider({
             clientId:process.env.GITHUB_CLIENT_ID,
