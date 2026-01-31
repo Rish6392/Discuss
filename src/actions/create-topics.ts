@@ -1,7 +1,7 @@
 "use server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib";
-import { Topic } from "@prisma/client";
+import { Prisma, Topic } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -47,7 +47,20 @@ export const createTopics = async (
     };
   }
 
-      let topic :Topic; // from prisma cient
+  // Prevent duplicate topics by slug (name)
+  const existing = await prisma.topic.findUnique({
+    where: { slug: result.data.name },
+  });
+
+  if (existing) {
+    return {
+      errors: {
+        formError: ["Topic already exists with this name"],
+      },
+    };
+  }
+
+  let topic: Topic; // from prisma client
   try {
     topic=await prisma.topic.create({
       data: {
@@ -56,7 +69,13 @@ export const createTopics = async (
       },
     });
   } catch (error) {
-    if (error instanceof Error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return {
+        errors: {
+          formError: ["Topic already exists with this name"],
+        },
+      };
+    } else if (error instanceof Error) {
       return {
         errors: {
           formError: [error.message],
