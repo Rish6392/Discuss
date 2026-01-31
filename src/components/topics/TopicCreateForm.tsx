@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,8 +15,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "../ui/textarea";
 import { createTopics } from "@/actions/create-topics";
 import { create } from "node:domain";
+import { useActionState } from "react";
 
 const TopicCreateForm = () => {
+  //error handling
+  const [formState,action]= useActionState(createTopics,{errors:{}})
   return (
     <Dialog>
       <form>
@@ -23,7 +27,7 @@ const TopicCreateForm = () => {
           <Button>New Topic</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
-          <form action={createTopics}>
+          <form action={action}>
             <DialogHeader>
               <DialogTitle>Create a Topic</DialogTitle>
               <DialogDescription>
@@ -36,10 +40,13 @@ const TopicCreateForm = () => {
                 <Label htmlFor="name">Name</Label>
                 <Input id="name" name="name" />
               </div>
+              {formState.errors.name && <p className="text-sm text-red-600">{formState.errors.name}</p>}
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea id="description" name="description" />
               </div>
+              {formState.errors.description && <p className="text-sm text-red-600">{formState.errors.description}</p>}
+               {formState.errors.formError && <p className="border border-red-600 bg-red-200 p-2 rounded">{formState.errors.description}</p>}
             </div>
             <DialogFooter>
               <DialogClose asChild>
