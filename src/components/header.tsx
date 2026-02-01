@@ -1,6 +1,6 @@
-import React from "react";
-import { Input } from "./ui/input";
+import React, { Suspense } from "react";
 import AuthHeader from "./auth-header";
+import SearchInput from "./search-input";
 
 const HeaderPage = async () => {
   //const session = await auth();
@@ -10,7 +10,10 @@ const HeaderPage = async () => {
         <h1 className="font-bold text-xl">Discuss</h1>
       </div>
       <div className="flex justify-center">
-        <Input type="text" placeholder="Search Post..." />
+        <Suspense>
+           <SearchInput/>
+        </Suspense>
+        
       </div>
       <div className="flex justify-end gap-2">
         <AuthHeader />
